@@ -1,0 +1,49 @@
+name: Cloud Functions Deploy - Production
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+
+    steps:
+    - uses: actions/checkout@v3
+    - id: 'auth'
+      uses: google-github-actions/auth@v0
+      with:
+        workload_identity_provider: 'projects/575722656450/locations/global/workloadIdentityPools/gcf-deploy-pools/providers/gcf-deploy-provider'
+        service_account: 'gcf-deploy@yuanchi.iam.gserviceaccount.com'
+    # https://github.com/google-github-actions/setup-gcloud
+    # https://github.com/google-github-actions/auth#setting-up-workload-identity-federation
+    - name: 設定 Google Cloud SDK
+      uses: google-github-actions/setup-gcloud@v0
+    - name: 建立 GCF 環境變數檔案
+      shell: bash
+      run: |
+        [[ -z "$ENV_PROD" ]] || echo "$ENV_PROD" > .env.yaml
+        echo "GITHUB_SHA: ${GITHUB_SHA}" >> .env.yaml
+      env:
+        ENV_PROD: ${{ secrets.ENV_PROD }}
+    # https://cloud.google.com/functions/docs/deploy
+    # 請在這個網頁查看自動佈署的參數說明
+    - name: 部署到 Google Cloud Functions - Production
+      run: >-
+        gcloud functions deploy "linebot-accounting-2sister"
+        --allow-unauthenticated
+        --entry-point=main
+        --env-vars-file=.env.yaml
+        --gen2
+        --max-instances=1
+        --memory=128Mi
+        --no-user-output-enabled
+        --region=us-central1
+        --runtime=nodejs18
+        --timeout=60s
+        --trigger-http
