@@ -14,11 +14,12 @@ const handleEvent = async ctx => {
   } catch (err) {
     log(`無法從 LINE 取得使用者資料, lineId = ${lineId}`)
   }
-  
+
   switch (event.type) {
     case 'message':
       if (event.message.type === 'text') return await require('./src/routes/messageMap')({ event, line })
       // return line.replyMessage(event.replyToken, require('./src/flexMessage/notFound')())
+      break
     case 'postback':
       return await require('./src/routes/postback')({ event, line })
     default:

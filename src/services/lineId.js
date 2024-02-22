@@ -1,5 +1,6 @@
 'use strict'
 const _ = require('lodash')
+const { client } = require('../utils/lineat')
 const flexText = require('../flexMessage/flexText')
 
 module.exports = async ({ event }) => {
