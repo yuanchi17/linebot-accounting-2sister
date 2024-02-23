@@ -7,7 +7,7 @@ const keywordHandlers = {}
 
 keywordHandlers['/lineId'] = require('../services/lineId')
 
-module.exports = async (event, req) => {
+module.exports = async ({ event, req }) => {
   const text = _.trim(event.message.text)
   if (keywordHandlers[text]) return await keywordHandlers[text]({ event, req })
 }
