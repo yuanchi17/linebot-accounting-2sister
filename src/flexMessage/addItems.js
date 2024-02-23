@@ -1,4 +1,5 @@
 const _ = require('lodash')
+const dayjs = require('dayjs')
 
 module.exports = accountItems => {
   const spendItems = accountItems['支出'] || []
@@ -100,6 +101,16 @@ module.exports = accountItems => {
         layout: 'horizontal',
         spacing: 'md',
         contents: [
+          {
+            type: 'button',
+            style: 'primary',
+            height: 'sm',
+            action: {
+              type: 'postback',
+              label: '當月統計',
+              data: JSON.stringify(['monthTotal', dayjs(accountItem.date).format('YYYY.MM')]),
+            },
+          },
           {
             type: 'button',
             style: 'secondary',

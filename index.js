@@ -18,7 +18,6 @@ const handleEvent = async ctx => {
   switch (event.type) {
     case 'message':
       if (event.message.type === 'text') return await require('./src/routes/messageMap')({ event, req })
-      // return client.replyMessage(event.replyToken, require('./src/flexMessage/notFound')())
       break
     case 'postback':
       return await require('./src/routes/postback')({ event, req })

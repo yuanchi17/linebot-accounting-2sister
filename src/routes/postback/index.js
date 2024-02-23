@@ -1,10 +1,11 @@
 const _ = require('lodash')
+const { client } = require('../../utils/lineat')
 const { log } = require('../../utils/helpers')
 const flexText = require('../../flexMessage/text')
 const fs = require('fs')
 const path = require('path')
 
-module.exports = async ({ event, line }) => {
+module.exports = async ({ event, req }) => {
   try {
     // 解析參數
     const [fn, ...args] = JSON.parse(_.get(event, 'postback.data', '[]'))
@@ -13,13 +14,13 @@ module.exports = async ({ event, line }) => {
     const fnPath = path.resolve(__dirname, `${fn}.js`)
     if (!fs.existsSync(fnPath)) throw new Error(`postback：${fn}.js 不存在`) // 確認檔案存在
     try {
-      await require(fnPath)({ event, line, args })
+      await require(fnPath)({ event, req, args })
     } catch (err) {
       err.message = `postback ${fn}: ${err.message}`
       throw err
     }
   } catch (err) {
     log(err)
-    return await line.replyMessage(event.replyToken, flexText(err.message))
+    return await client.replyMessage(event.replyToken, flexText(err.message))
   }
 }
