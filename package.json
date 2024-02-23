@@ -16,6 +16,7 @@
     "@google-cloud/functions-framework": "^3.1.2",
     "@line/bot-sdk": "^8.2.0",
     "axios": "^0.26.1",
+    "dayjs": "^1.11.10",
     "debug": "^4.3.3",
     "dotenv": "^8.2.0",
     "eslint": "^7.10.0",

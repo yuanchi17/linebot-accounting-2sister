@@ -1,5 +1,6 @@
 const _ = require('lodash')
 const axios = require('axios')
+const dayjs = require('dayjs')
 const Papa = require('papaparse')
 const Qs = require('qs')
 
@@ -11,6 +12,8 @@ exports.getenv = (key, defaultval) => {
 }
 
 exports.httpBuildQuery = (obj) => Qs.stringify(obj, { arrayFormat: 'brackets' })
+
+exports.getNowDate = () => dayjs().format('YYYY.MM.DD')
 
 exports.errToPlainObj = (() => {
   const ERROR_KEYS = [
