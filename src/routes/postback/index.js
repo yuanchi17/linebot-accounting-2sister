@@ -1,6 +1,6 @@
 const _ = require('lodash')
 const { log } = require('../../utils/helpers')
-const flexText = require('../../flexMessage/flexText')
+const flexText = require('../../flexMessage/text')
 const fs = require('fs')
 const path = require('path')
 
