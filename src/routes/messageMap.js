@@ -1,4 +1,5 @@
 const _ = require('lodash')
+const { client } = require('../utils/lineat')
 const accountingService = require('../services/accounting')
 
 /**
@@ -13,4 +14,6 @@ module.exports = async ({ event, req }) => {
   if (keywordHandlers[text]) return await keywordHandlers[text]({ event, req })
 
   if (_.includes(text, '支出') || _.includes(text, '收入')) return await accountingService({ event, req, text })
+
+  if (text === '二姐記帳使用說明') return await client.validateAndReplyMessage(event.replyToken, require('../flexMessage/intro')())
 }
