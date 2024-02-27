@@ -77,7 +77,6 @@ module.exports = accountItems => {
                   spacing: 'sm',
                   flex: 1,
                   contents: _.map(items, item => {
-                    if (!item.status) return
                     return {
                       type: 'text',
                       text: `${item?.title} ${item?.money}`,

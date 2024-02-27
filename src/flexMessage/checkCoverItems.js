@@ -122,7 +122,7 @@ module.exports = ({ itemsObj, text }) => {
         contents: [
           {
             type: 'text',
-            text: '若無需覆蓋紀錄，請略過此提醒，並重新留言記帳',
+            text: '若無需覆蓋紀錄，請略過此提醒，並將重複的項目移除後，再重新留言記帳',
             align: 'center',
             wrap: true,
             size: 'sm',
@@ -135,7 +135,7 @@ module.exports = ({ itemsObj, text }) => {
             action: {
               type: 'postback',
               label: '我要覆蓋舊紀錄',
-              data: JSON.stringify(['coverOldDatas', itemsObj, text]),
+              data: JSON.stringify(['coverOldDatas', checkCoverInfo]),
             },
           },
         ],
