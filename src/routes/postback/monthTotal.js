@@ -4,7 +4,7 @@ const { getenv, getCsv } = require('../../utils/helpers')
 const flexMonthTotal = require('../../flexMessage/monthTotal')
 
 module.exports = async ({ event, req, args }) => {
-  const datas = _.map(await getCsv(getenv('ACCOUNTING_CSV', 0)), data => ({
+  const datas = _.map(await getCsv(getenv('ACCOUNTING_CSV'), 0), data => ({
     ...data,
     金額: _.parseInt(data['金額']),
   }))

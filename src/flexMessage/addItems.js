@@ -80,7 +80,7 @@ module.exports = accountItems => {
                     if (!item.status) return
                     return {
                       type: 'text',
-                      text: `${item?.item} ${item?.money}`,
+                      text: `${item?.title} ${item?.money}`,
                       wrap: true,
                       color: '#666666',
                       size: 'sm',
