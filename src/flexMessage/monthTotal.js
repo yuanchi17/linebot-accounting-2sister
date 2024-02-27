@@ -1,8 +1,8 @@
 const _ = require('lodash')
 
 module.exports = ({ monthTotalData, yearMonth }) => {
-  const spendItems = _.filter(monthTotalData, { '支出/收入': '支出' }) || []
-  const incomeItems = _.filter(monthTotalData, { '支出/收入': '收入' }) || []
+  const spendItems = _.filter(monthTotalData, { type: '支出' }) || []
+  const incomeItems = _.filter(monthTotalData, { type: '收入' }) || []
 
   return {
     altText: `當月統計 - ${yearMonth}`,
@@ -32,13 +32,13 @@ module.exports = ({ monthTotalData, yearMonth }) => {
             contents: [
               {
                 type: 'text',
-                text: `收入：$${_.sumBy(incomeItems, '金額') || 0}`,
+                text: `收入：$${_.sumBy(incomeItems, 'money') || 0}`,
                 weight: 'bold',
                 size: 'md',
               },
               {
                 type: 'text',
-                text: `支出：$${_.sumBy(spendItems, '金額') || 0}`,
+                text: `支出：$${_.sumBy(spendItems, 'money') || 0}`,
                 weight: 'bold',
                 size: 'md',
               },

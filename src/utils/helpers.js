@@ -56,6 +56,14 @@ exports.log = (() => {
   }
 })()
 
+exports.getFormDataNoCache = async url => {
+  const csv = _.trim(_.get(await axios.get(url), 'data')) // _.trim：把前後多餘的空格、BOM 修掉
+  return _.get(Papa.parse(csv, {
+    encoding: 'utf8',
+    header: true,
+  }), 'data', [])
+}
+
 exports.getCsv = async (url, cachetime = 3e4) => {
   const csv = _.trim(_.get(await axios.get(url, { // _.trim：把前後多餘的空格、BOM 修掉
     params: { cachebust: _.floor(Date.now() / cachetime) },

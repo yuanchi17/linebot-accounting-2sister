@@ -1,7 +1,7 @@
 const _ = require('lodash')
 
 module.exports = ({ itemsObj, text }) => {
-  const checkCoverItems = _.compact([...itemsObj['支出'] || [], ...itemsObj['收入'] || []])
+  const checkCoverItems = _.filter(_.compact([...itemsObj['支出'] || [], ...itemsObj['收入'] || []]), item => item?.sameData)
   const checkCoverInfo = {
     date: checkCoverItems[0]?.date,
     id: checkCoverItems[0]?.id.slice(0, 10), // 同筆項目的 id 的前 10 碼都會一樣

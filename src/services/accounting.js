@@ -1,20 +1,17 @@
 const _ = require('lodash')
 const { client } = require('../utils/lineat')
 const { default: axios } = require('axios')
-const { log, errToPlainObj, httpBuildQuery, getNowDate, getenv, getCsv } = require('../utils/helpers')
+const { log, errToPlainObj, httpBuildQuery, getNowDate, getenv, getFormDataNoCache } = require('../utils/helpers')
 const dayjs = require('dayjs')
 const flexAddItems = require('../flexMessage/addItems')
 const flexCheckSameItems = require('../flexMessage/checkCoverItems')
 const flexText = require('../flexMessage/text')
 
 exports.getAccountDatas = async () => {
-  return _.map(await getCsv(getenv('ACCOUNTING_CSV'), 0), data => ({
+  return _.map(await getFormDataNoCache(getenv('ACCOUNTING_CSV')), data => ({
+    ...data,
     coverId: data?.coverId || '',
-    date: data['日期'],
-    id: data['流水號'],
-    money: _.parseInt(data['金額']),
-    title: data['項目'],
-    type: data['支出/收入'],
+    money: _.parseInt(data.money),
   }))
 }
 
@@ -70,7 +67,7 @@ exports.sendGoogleForm = async ({ event, itemsObj, text, oldDatas = [] }) => {
     if (isExist) continue
     for (let i = 0; i < items.length; i++) {
       let status = false
-      if (_.find(oldDatas, ['流水號', items[i].id])) {
+      if (_.find(oldDatas, ['id', items[i].id])) {
         isExist = true
         continue
       }
