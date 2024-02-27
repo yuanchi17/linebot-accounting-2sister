@@ -44,12 +44,17 @@ exports.checkSameDatas = async itemsObj => {
   // 若當日無舊資料，則不需核對是否有重複
   if (!oldDatas.length) return
 
+  const sameTitleAndMoneyIds = []
   let hasSameData = false
   for (const [type, items] of _.toPairs(itemsObj)) {
     for (let i = 0; i < items.length; i++) {
-      // 如果有相同標題或金額，跟使用者確認是否需要覆蓋資料
+      // 如果有相同標題，跟使用者確認是否需要覆蓋資料
       const sameData = _.find(oldDatas, ['title', items[i].title])
-      if (!sameData || items[i].money === sameData.money) continue
+      if (!sameData) continue
+      if (items[i].money === sameData.money) {
+        sameTitleAndMoneyIds.push(items[i].id)
+        continue
+      }
       hasSameData = true
       itemsObj[type][i] = {
         ...items[i],
@@ -58,6 +63,11 @@ exports.checkSameDatas = async itemsObj => {
     }
   }
 
+  // 若標題及金額皆相同，則移除
+  if (sameTitleAndMoneyIds.length) {
+    _.remove(itemsObj['支出'], i => _.includes(sameTitleAndMoneyIds, i.id))
+    _.remove(itemsObj['收入'], i => _.includes(sameTitleAndMoneyIds, i.id))
+  }
   return hasSameData
 }
 
