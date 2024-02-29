@@ -51,7 +51,7 @@ exports.checkSameDatas = async itemsObj => {
       // 如果有相同標題，跟使用者確認是否需要覆蓋資料
       const sameData = _.find(oldDatas, ['title', items[i].title])
       if (!sameData) continue
-      if (items[i].money === sameData.money) {
+      if (items[i].money === sameData.money && items[i].ps === sameData.ps) {
         sameTitleAndMoneyIds.push(items[i].id)
         continue
       }
@@ -157,5 +157,6 @@ exports.main = async ({ event, req, text }) => {
     return await client.validateAndReplyMessage(event.replyToken, flexCheckSameItems({ itemsObj, text }))
   }
 
+  if (!itemsObj['收入']?.length && !itemsObj['支出']?.length) return await client.validateAndReplyMessage(event.replyToken, flexText('這些項目已記錄～'))
   await exports.sendGoogleForm({ event, itemsObj, text })
 }

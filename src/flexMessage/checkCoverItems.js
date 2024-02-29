@@ -63,7 +63,7 @@ module.exports = ({ itemsObj, text }) => {
                       contents: [
                         {
                           type: 'text',
-                          text: `${item.sameData.type} ${item.sameData.title} ${item.sameData.money}`,
+                          text: `${item.sameData.type} ${item.sameData.title} ${item.sameData.money} ${item.sameData.ps}`,
                           wrap: true,
                           color: '#666666',
                           size: 'sm',
@@ -95,7 +95,7 @@ module.exports = ({ itemsObj, text }) => {
                       contents: [
                         {
                           type: 'text',
-                          text: `${item.sameData.type} ${item.title} ${item.money}`,
+                          text: `${item.sameData.type} ${item.title} ${item.money} ${item.ps}`,
                           wrap: true,
                           color: '#666666',
                           size: 'sm',
@@ -122,7 +122,7 @@ module.exports = ({ itemsObj, text }) => {
         contents: [
           {
             type: 'text',
-            text: '若無需覆蓋紀錄，請略過此提醒，並將重複的項目移除後，再重新留言記帳',
+            text: '若無需覆蓋紀錄，請略過此提醒，並重新留言記帳',
             align: 'center',
             wrap: true,
             size: 'sm',
