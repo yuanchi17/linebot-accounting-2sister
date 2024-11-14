@@ -16,7 +16,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - id: 'auth'
-      uses: google-github-actions/auth@v0
+      uses: google-github-actions/auth@v2
       with:
         workload_identity_provider: 'projects/575722656450/locations/global/workloadIdentityPools/gcf-deploy-pools/providers/gcf-deploy-provider'
         service_account: 'gcf-deploy@yuanchi.iam.gserviceaccount.com'
