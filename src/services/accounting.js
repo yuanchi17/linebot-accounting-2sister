@@ -75,6 +75,7 @@ exports.sendGoogleForm = async ({ event, itemsObj, text }) => {
   for (const [type, items] of _.toPairs(itemsObj)) {
     for (let i = 0; i < items.length; i++) {
       let status = false
+      if (!items[i].money) continue
       try {
         const params = {}
         params[`entry.${getenv('ACCOUNTING_ITEM_ID')}`] = items[i].id
