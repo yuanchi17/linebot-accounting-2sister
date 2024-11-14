@@ -23,7 +23,7 @@ jobs:
     # https://github.com/google-github-actions/setup-gcloud
     # https://github.com/google-github-actions/auth#setting-up-workload-identity-federation
     - name: 設定 Google Cloud SDK
-      uses: google-github-actions/setup-gcloud@v0
+      uses: google-github-actions/setup-gcloud@v2
     - name: 建立 GCF 環境變數檔案
       shell: bash
       run: |
