@@ -169,7 +169,7 @@ exports.main = async ({ event, req, text }) => {
     return await client.validateAndReplyMessage(event.replyToken, flexCheckSameItems({ itemsObj }))
   }
 
-  if (!itemsObj['收入']?.length && !itemsObj['支出']?.length) return await client.validateAndReplyMessage(event.replyToken, flexText('請輸入正確格式'))
+  if (!itemsObj['收入']?.length && !itemsObj['支出']?.length) return await client.validateAndReplyMessage(event.replyToken, flexText('這些項目可能已經記錄過，或是格式輸入錯誤(被你氣鼠XD)'))
 
   await Promise.all([
     exports.sendTextGoogleForm({ event, textId, text }),
