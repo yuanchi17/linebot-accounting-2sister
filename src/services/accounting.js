@@ -19,6 +19,7 @@ exports.parseText = ({ textArr, textId }) => {
   const obj = {}
   let type = ''
   _.each(textArr, (text, index) => {
+    text = text.split(' ')
     if (_.includes(['收入', '支出'], text)) {
       type = text
       obj[type] = []
@@ -26,7 +27,6 @@ exports.parseText = ({ textArr, textId }) => {
     }
     if (!type) return
 
-    text = text.split(' ')
     const item = {
       date: getNowDate(),
       id: `${textId}${_.padStart(index, 2, 0)}`,
@@ -169,7 +169,7 @@ exports.main = async ({ event, req, text }) => {
     return await client.validateAndReplyMessage(event.replyToken, flexCheckSameItems({ itemsObj }))
   }
 
-  if (!itemsObj['收入']?.length && !itemsObj['支出']?.length) return await client.validateAndReplyMessage(event.replyToken, flexText('這些項目已記錄～'))
+  if (!itemsObj['收入']?.length && !itemsObj['支出']?.length) return await client.validateAndReplyMessage(event.replyToken, flexText('請輸入正確格式'))
 
   await Promise.all([
     exports.sendTextGoogleForm({ event, textId, text }),
