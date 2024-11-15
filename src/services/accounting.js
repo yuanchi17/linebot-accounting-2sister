@@ -15,7 +15,7 @@ exports.getAccountDatas = async () => {
   }))
 }
 
-exports.parseText = textArr => {
+exports.parseText = ({ textArr, textId }) => {
   const obj = {}
   let type = ''
   _.each(textArr, (text, index) => {
@@ -24,16 +24,20 @@ exports.parseText = textArr => {
       obj[type] = []
       return
     }
-
     if (!type) return
+
     text = text.split(' ')
-    obj[type].push({
+    const item = {
       date: getNowDate(),
-      id: `${dayjs().unix()}${_.padStart(index, 2, 0)}`,
+      id: `${textId}${_.padStart(index, 2, 0)}`,
       money: _.parseInt(text[1]) || 0,
       ps: text.slice(2).join(' ') || '',
       title: text[0] || '',
-    })
+      textId,
+    }
+    if (!item.money) return
+
+    obj[type].push(item)
   })
   return obj
 }
@@ -71,11 +75,9 @@ exports.checkSameDatas = async itemsObj => {
   return hasSameData
 }
 
-exports.sendGoogleForm = async ({ event, itemsObj, text }) => {
+exports.sendGoogleForm = async ({ event, itemsObj }) => {
   for (const [type, items] of _.toPairs(itemsObj)) {
     for (let i = 0; i < items.length; i++) {
-      let status = false
-      if (!items[i].money) continue
       try {
         const params = {}
         params[`entry.${getenv('ACCOUNTING_ITEM_ID')}`] = items[i].id
@@ -85,23 +87,19 @@ exports.sendGoogleForm = async ({ event, itemsObj, text }) => {
         params[`entry.${getenv('ACCOUNTING_ITEM_TITLE')}`] = items[i].title
         params[`entry.${getenv('ACCOUNTING_ITEM_COVER_ID')}`] = items[i]?.sameData?.id || ''
         params[`entry.${getenv('ACCOUNTING_ITEM_TYPE')}`] = type
-        params[`entry.${getenv('ACCOUNTING_ITEM_TEXT')}`] = text
+        params[`entry.${getenv('ACCOUNTING_ITEM_TEXT_ID')}`] = items[i].textId
 
         await axios.post(`https://docs.google.com/forms/d/e/${getenv('GOOGLE_FORM_ID')}/formResponse`, httpBuildQuery(params))
-        status = true
       } catch (err) {
         log(errToPlainObj(err))
       }
-      itemsObj[type][i] = {
-        ...items[i],
-        status,
-      }
+      itemsObj[type][i] = items[i]
     }
   }
   return await client.validateAndReplyMessage(event.replyToken, flexAddItems(itemsObj))
 }
 
-exports.sendTempGoogleForm = async ({ itemsObj, text }) => {
+exports.sendTempGoogleForm = async ({ itemsObj }) => {
   for (const [type, items] of _.toPairs(itemsObj)) {
     for (let i = 0; i < items.length; i++) {
       try {
@@ -113,7 +111,7 @@ exports.sendTempGoogleForm = async ({ itemsObj, text }) => {
         params[`entry.${getenv('ACCOUNTING_ITEM_TITLE')}`] = items[i].title
         params[`entry.${getenv('ACCOUNTING_ITEM_COVER_ID')}`] = items[i]?.sameData?.id || ''
         params[`entry.${getenv('ACCOUNTING_ITEM_TYPE')}`] = type
-        params[`entry.${getenv('ACCOUNTING_ITEM_TEXT')}`] = text
+        params[`entry.${getenv('ACCOUNTING_TEMP_ITEM_TEXT_ID')}`] = items[i]?.textId
 
         await axios.post(`https://docs.google.com/forms/d/e/${getenv('GOOGLE_FORM_TEMP_ID')}/formResponse`, httpBuildQuery(params))
       } catch (err) {
@@ -146,18 +144,35 @@ exports.sendGoogleFormByTempData = async ({ event, newDatas, isExist }) => {
   return await client.validateAndReplyMessage(event.replyToken, flexAddItems(_.groupBy(newDatas, 'type')))
 }
 
+exports.sendTextGoogleForm = async ({ textId, text }) => {
+  try {
+    const params = {}
+    params[`entry.${getenv('FORM_PARAM_TEXT_ID')}`] = textId
+    params[`entry.${getenv('FORM_PARAM_TEXT_TEXT')}`] = text
+
+    await axios.post(`https://docs.google.com/forms/d/e/${getenv('GOOGLE_FORM_TEXT_ID')}/formResponse`, httpBuildQuery(params))
+  } catch (err) {
+    log(errToPlainObj(err))
+  }
+}
+
 exports.main = async ({ event, req, text }) => {
+  const textId = dayjs().unix()
   const textArr = _.compact(text.split('\n'))
 
-  const itemsObj = exports.parseText(textArr)
+  const itemsObj = exports.parseText({ textArr, textId })
   if (!itemsObj) return
 
   const hasSameData = await exports.checkSameDatas(itemsObj)
   if (hasSameData) {
-    await exports.sendTempGoogleForm({ itemsObj, text })
-    return await client.validateAndReplyMessage(event.replyToken, flexCheckSameItems({ itemsObj, text }))
+    await exports.sendTempGoogleForm({ itemsObj })
+    return await client.validateAndReplyMessage(event.replyToken, flexCheckSameItems({ itemsObj }))
   }
 
   if (!itemsObj['收入']?.length && !itemsObj['支出']?.length) return await client.validateAndReplyMessage(event.replyToken, flexText('這些項目已記錄～'))
-  await exports.sendGoogleForm({ event, itemsObj, text })
+
+  await Promise.all([
+    exports.sendTextGoogleForm({ event, textId, text }),
+    exports.sendGoogleForm({ event, itemsObj }),
+  ])
 }

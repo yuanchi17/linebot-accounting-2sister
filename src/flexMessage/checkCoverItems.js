@@ -1,6 +1,6 @@
 const _ = require('lodash')
 
-module.exports = ({ itemsObj, text }) => {
+module.exports = ({ itemsObj }) => {
   const checkCoverItems = _.filter(_.compact([...itemsObj['支出'] || [], ...itemsObj['收入'] || []]), item => item?.sameData)
   const checkCoverInfo = {
     date: checkCoverItems[0]?.date,
