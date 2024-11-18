@@ -19,14 +19,14 @@ exports.parseText = ({ textArr, textId }) => {
   const obj = {}
   let type = ''
   _.each(textArr, (text, index) => {
-    text = text.split(' ')
-    if (_.includes(['收入', '支出'], text)) {
+    if (_.includes(['收入', '支出'], text.trim())) {
       type = text
       obj[type] = []
       return
     }
     if (!type) return
 
+    text = text.split(' ')
     const item = {
       date: getNowDate(),
       id: `${textId}${_.padStart(index, 2, 0)}`,
