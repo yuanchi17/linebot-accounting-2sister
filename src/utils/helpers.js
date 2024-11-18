@@ -15,6 +15,13 @@ exports.httpBuildQuery = (obj) => Qs.stringify(obj, { arrayFormat: 'brackets' })
 
 exports.getNowDate = () => dayjs().format('YYYY.MM.DD')
 
+exports.getDate = (date) => {
+  const nowYear = dayjs().year()
+  const f2eDate = `${nowYear}/${date}` // 2024/11/8
+  if (dayjs().isAfter(f2eDate)) return dayjs(f2eDate).format('YYYY.MM.DD')
+  return dayjs(`${nowYear - 1}/${date}`).format('YYYY.MM.DD')
+}
+
 exports.errToPlainObj = (() => {
   const ERROR_KEYS = [
     'address',

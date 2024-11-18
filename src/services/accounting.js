@@ -1,7 +1,7 @@
 const _ = require('lodash')
 const { client } = require('../utils/lineat')
 const { default: axios } = require('axios')
-const { log, errToPlainObj, httpBuildQuery, getNowDate, getenv, getFormDataNoCache } = require('../utils/helpers')
+const { log, errToPlainObj, httpBuildQuery, getNowDate, getenv, getFormDataNoCache, getDate } = require('../utils/helpers')
 const dayjs = require('dayjs')
 const flexAddItems = require('../flexMessage/addItems')
 const flexCheckSameItems = require('../flexMessage/checkCoverItems')
@@ -16,10 +16,19 @@ exports.getAccountDatas = async () => {
 }
 
 exports.parseText = ({ textArr, textId }) => {
-  const obj = {}
+  const obj = { }
+  let accountDate = ''
   let type = ''
   _.each(textArr, (text, index) => {
-    if (_.includes(['收入', '支出'], text.trim())) {
+    text = text.trim()
+
+    // 如果第一行有日期，就依此日期為主
+    if (index === 0 && /^(\d{1,2})\/(\d{1,2})$/.test(text)) {
+      accountDate = getDate(text)
+      return
+    }
+
+    if (_.includes(['收入', '支出'], text)) {
       type = text
       obj[type] = []
       return
@@ -28,7 +37,7 @@ exports.parseText = ({ textArr, textId }) => {
 
     text = text.split(' ')
     const item = {
-      date: getNowDate(),
+      date: accountDate || getNowDate(),
       id: `${textId}${_.padStart(index, 2, 0)}`,
       money: _.parseInt(text[1]) || 0,
       ps: text.slice(2).join(' ') || '',
