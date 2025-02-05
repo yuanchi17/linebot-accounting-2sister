@@ -44,6 +44,6 @@ jobs:
         --memory=128Mi
         --no-user-output-enabled
         --region=us-central1
-        --runtime=nodejs18
+        --runtime=nodejs20
         --timeout=60s
         --trigger-http
